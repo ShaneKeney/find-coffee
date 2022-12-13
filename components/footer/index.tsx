@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
     <footer>
-      <p>Footer</p>
+      <p>© 2022 Shane Keney</p>
     </footer>
   );
 };
