@@ -1,4 +1,4 @@
-import styles from "./Banner.module.css";
+import styles from "./banner.module.css";
 
 interface BannerProps {
   buttonText: string;
