@@ -9,8 +9,6 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   color: #373b64;
-  resize: both;
-  overflow: scroll;
 }
 
 @font-face {
