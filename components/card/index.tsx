@@ -7,7 +7,7 @@ interface CardProps {
   href: string;
   name: string;
   imgUrl: string;
-  className: string
+  className: string;
 }
 
 const Card = (props: CardProps) => {
@@ -23,7 +23,7 @@ const Card = (props: CardProps) => {
             alt="coffee-storefront"
             src={props.imgUrl}
             width={260}
-            height={160}
+            height={200}
           />
         </div>
       </div>
