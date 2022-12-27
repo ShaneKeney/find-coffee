@@ -3,13 +3,28 @@ import Image from "next/image";
 import Banner from "../components/banner";
 import styles from "../styles/home.module.css";
 import Card from "../components/card";
-import coffeeStoresData from "../data/coffee-stores.json";
 import { GetStaticProps } from "next";
 
 export const getStaticProps: GetStaticProps = async (context) => {
+  const options = {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: "fsq3TciQcD/7rDVHw6fJRZrDi7sN24VOcEXpqdDTGkPFA+o=",
+    },
+  };
+
+  const response = await fetch(
+    "https://api.foursquare.com/v3/places/search?query=coffee&ll=43.653833032607096%2C-79.37896808855945&limit=6",
+    options
+  );
+  const data = await response.json();
+
+  console.log("Data", data);
+
   return {
     props: {
-      coffeeStores: coffeeStoresData,
+      coffeeStores: data.results || [],
     }, // will be passed to the page component as props
   };
 };
@@ -18,13 +33,13 @@ interface HomeProps {
   coffeeStores: [CoffeeStore];
 }
 
-interface CoffeeStore {
-  id: number;
+export interface CoffeeStore {
+  fsq_id: number;
   name: string;
   imgUrl: string;
   websiteUrl: string;
   address: string;
-  neighborhood: string;
+  neighbourhood: string;
 }
 
 export default function Home(props: HomeProps) {
@@ -61,10 +76,13 @@ export default function Home(props: HomeProps) {
             <div className={styles.cardLayout}>
               {coffeeStores.map((coffeeStore) => (
                 <Card
-                  key={coffeeStore.id}
+                  key={coffeeStore.fsq_id}
                   name={coffeeStore.name}
-                  imgUrl={coffeeStore.imgUrl}
-                  href={`/coffee-store/${coffeeStore.id}`}
+                  imgUrl={
+                    coffeeStore.imgUrl ||
+                    "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                  }
+                  href={`/coffee-store/${coffeeStore.fsq_id}`}
                   className={styles.card}
                 />
               ))}
