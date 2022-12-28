@@ -20,12 +20,23 @@ interface HomeProps {
 }
 
 export interface CoffeeStore {
-  fsq_id: number;
+  id: number;
   name: string;
   imgUrl: string;
-  websiteUrl: string;
+  neighborhood: string;
   address: string;
-  neighbourhood: string;
+}
+
+// FS (aka FourSquare) location interface
+interface FS_Location {
+  address: string;
+  neighborhood: string[];
+}
+
+export interface FS_CoffeeStore {
+  fsq_id: number;
+  name: string;
+  location: FS_Location;
 }
 
 export default function Home(props: HomeProps) {
@@ -62,13 +73,13 @@ export default function Home(props: HomeProps) {
             <div className={styles.cardLayout}>
               {coffeeStores.map((coffeeStore) => (
                 <Card
-                  key={coffeeStore.fsq_id}
+                  key={coffeeStore.id}
                   name={coffeeStore.name}
                   imgUrl={
                     coffeeStore.imgUrl ||
                     "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
                   }
-                  href={`/coffee-store/${coffeeStore.fsq_id}`}
+                  href={`/coffee-store/${coffeeStore.id}`}
                   className={styles.card}
                 />
               ))}

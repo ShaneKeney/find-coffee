@@ -1,4 +1,9 @@
-import { CoffeeStore } from "../pages";
+import { CoffeeStore, FS_CoffeeStore } from "../pages";
+import { createApi } from "unsplash-js";
+
+const unsplash = createApi({
+  accessKey: process.env.UNSPLASH_ACCESS_KEY as string,
+});
 
 const FOURSQUARE__BASE_URL = "https://api.foursquare.com/v3/places/search";
 
@@ -13,6 +18,7 @@ const getUrlForCoffeeStores = (
 };
 
 export const fetchCoffeeStores = async (): Promise<CoffeeStore[]> => {
+  const photos = await fetchCoffeeStoreImages();
   const options = {
     method: "GET",
     headers: {
@@ -27,5 +33,33 @@ export const fetchCoffeeStores = async (): Promise<CoffeeStore[]> => {
   );
   if (!response) return [];
   const data = await response.json();
-  return data.results;
+  const coffeeStores = data.results?.map(
+    (result: FS_CoffeeStore, index: number) => {
+      const { fsq_id, name, location } = result;
+      return {
+        id: fsq_id,
+        name: name,
+        address: location.address,
+        neighborhood:
+          location.neighborhood?.length > 0 ? location.neighborhood[0] : "",
+        imgUrl: photos?.length > 0 ? photos[index] : null,
+      };
+    }
+  );
+  return coffeeStores || [];
+};
+
+export const fetchCoffeeStoreImages = async () => {
+  const response = await unsplash.search.getPhotos({
+    query: "coffee shop",
+    page: 1,
+    perPage: 30,
+    orientation: "portrait",
+  });
+
+  const unsplashResults = response.response?.results?.map(
+    (result) => result.urls["small"]
+  );
+
+  return unsplashResults || [];
 };
