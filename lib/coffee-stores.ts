@@ -2,33 +2,35 @@ import { CoffeeStore, FS_CoffeeStore } from "../pages";
 import { createApi } from "unsplash-js";
 
 const unsplash = createApi({
-  accessKey: process.env.UNSPLASH_ACCESS_KEY as string,
+  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY as string,
 });
 
 const FOURSQUARE__BASE_URL = "https://api.foursquare.com/v3/places/search";
 
 const getUrlForCoffeeStores = (
-  lat: number,
-  lng: number,
+  latLong: string = "40.7,-74",
   query: string,
   limit: number
 ) => {
-  const url = `${FOURSQUARE__BASE_URL}?query=${query}&ll=${lat}%2C${lng}&limit=${limit}`;
+  const url = `${FOURSQUARE__BASE_URL}?query=${query}&ll=${latLong}&limit=${limit}`;
   return url;
 };
 
-export const fetchCoffeeStores = async (): Promise<CoffeeStore[]> => {
+export const fetchCoffeeStores = async (
+  latLong: string = "40.7,-74",
+  limit: number = 10
+): Promise<CoffeeStore[]> => {
   const photos = await fetchCoffeeStoreImages();
   const options = {
     method: "GET",
     headers: {
       Accept: "application/json",
-      Authorization: `${process.env.FOURSQUARE_API_KEY}`,
+      Authorization: `${process.env.NEXT_PUBLIC_FOURSQUARE_API_KEY}`,
     },
   };
 
   const response = await fetch(
-    getUrlForCoffeeStores(40.7128, -74.006, "coffee", 10),
+    getUrlForCoffeeStores(latLong, "coffee", limit),
     options
   );
   if (!response) return [];

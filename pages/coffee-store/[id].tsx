@@ -27,11 +27,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (context) => {
   const { params } = context;
   const coffeeStores = await fetchCoffeeStores();
+  const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+    return coffeeStore.id.toString() === params?.id;
+  });
+
   return {
     props: {
-      coffeeStore: coffeeStores.find(
-        (coffeeStore) => coffeeStore.id.toString() === params?.id
-      ),
+      coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
     },
   };
 };
@@ -52,7 +54,6 @@ const CoffeeStore = (props: CoffeeStoreProps) => {
 
   const handleUpvoteButton = () => {};
 
-  console.log(props.coffeeStore);
   return (
     <div className={styles.layout}>
       <Head>
@@ -74,7 +75,7 @@ const CoffeeStore = (props: CoffeeStoreProps) => {
             width={"600"}
             height={"360"}
             className={styles.storeImg}
-            alt={name}
+            alt={name || "coffee-storefront"}
           />
         </div>
 
