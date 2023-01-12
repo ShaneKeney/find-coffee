@@ -6,7 +6,8 @@ import Card from "../components/card";
 import { GetStaticProps } from "next";
 import { fetchCoffeeStores } from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/use-track-location";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { ACTION_TYPES, StoreContext } from "../store/store-context";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const coffeeStores = await fetchCoffeeStores();
@@ -44,22 +45,24 @@ export interface FS_CoffeeStore {
 export default function Home(props: HomeProps) {
   const { coffeeStores } = props;
 
-  const { handleTrackLocation, latLong, locationErrorMsg, isFindingLocation } =
+  const { handleTrackLocation, locationErrorMsg, isFindingLocation } =
     useTrackLocation();
 
-  console.log({ latLong, locationErrorMsg });
-
-  const [coffeeStoresNearMe, setStoresNearMe] = useState<CoffeeStore[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const { dispatch, state } = useContext(StoreContext);
+  const { latLong } = state;
 
   useEffect(() => {
     async function setCoffeeStoresByLocation() {
       if (latLong) {
         try {
           const fetchedCoffeeStores = await fetchCoffeeStores(latLong);
-          console.log({ fetchedCoffeeStores });
-          setStoresNearMe(fetchedCoffeeStores);
           // Set coffee stores
+          dispatch({
+            type: ACTION_TYPES.SET_COFFEE_STORES,
+            payload: { coffeeStores: fetchedCoffeeStores },
+          });
         } catch (err: any) {
           // Set error
           setError(err?.message);
@@ -99,11 +102,11 @@ export default function Home(props: HomeProps) {
             alt="coffee-hero-image"
           />
         </div>
-        {coffeeStoresNearMe.length > 0 && (
+        {state.coffeeStores?.length > 0 && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading2}>Stores near me</h2>
             <div className={styles.cardLayout}>
-              {coffeeStoresNearMe.map((coffeeStore) => (
+              {state.coffeeStores?.map((coffeeStore) => (
                 <Card
                   key={coffeeStore.id}
                   name={coffeeStore.name}
